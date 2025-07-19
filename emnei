@@ -1,0 +1,67 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Change to 0x3F if your LCD uses that
+int delayTime = 200;
+
+// Texts to scroll
+String text1 = "Turna";
+String text2 = "Paul";
+
+// State variables
+int pos1 = 0;
+int pos2 = 11;
+bool dir1 = true;  // true = moving right
+bool dir2 = false; // false = moving left
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+}
+
+void loop() {
+  // --- Handle Turna (Row 0, Ping-pong left-right) ---
+  lcd.setCursor(0, 0);
+  lcd.print("                "); // Clear row 0
+  lcd.setCursor(pos1, 0);
+  lcd.print(text1);
+
+  // Update position for Turna
+  if (dir1) {
+    pos1++;
+    if (pos1 > 16 - text1.length()) {
+      pos1 = 16 - text1.length();
+      dir1 = false;
+    }
+  } else {
+    pos1--;
+    if (pos1 < 0) {
+      pos1 = 0;
+      dir1 = true;
+    }
+  }
+
+  // --- Handle Paul (Row 1, Ping-pong right-left) ---
+  lcd.setCursor(0, 1);
+  lcd.print("                "); // Clear row 1
+  lcd.setCursor(pos2, 1);
+  lcd.print(text2);
+
+  // Update position for Paul
+  if (dir2) {
+    pos2++;
+    if (pos2 > 16 - text2.length()) {
+      pos2 = 16 - text2.length();
+      dir2 = false;
+    }
+  } else {
+    pos2--;
+    if (pos2 < 0) {
+      pos2 = 0;
+      dir2 = true;
+    }
+  }
+
+  delay(delayTime);
+}
